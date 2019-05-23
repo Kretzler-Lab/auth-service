@@ -58,7 +58,7 @@ public class AuthController {
         AuthResponse auth = new AuthResponse();
         String token = (String) payload.get("token");
         User user = new User();
-        if (token != null && !token.equals("null")) {
+        if (token != null) {
             try {
                 DecodedJWT verifiedToken = JWT.require(Algorithm.HMAC512(SECRET.getBytes()))
                         .build()
@@ -70,7 +70,8 @@ public class AuthController {
             } catch (JWTVerificationException exception) {
                 auth.setToken(null);
             }
-        } else if (session != null) {
+        }
+        if (session != null && auth.getToken() == null) {
             user = (User) session.getAttribute("user");
             token = JWT.create().withSubject(user.getId())
                     .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
