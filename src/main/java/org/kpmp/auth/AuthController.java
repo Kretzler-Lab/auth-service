@@ -58,7 +58,7 @@ public class AuthController {
         AuthResponse auth = new AuthResponse();
         String token = (String) payload.get("token");
         User user = new User();
-        if (!token.equals("null")) {
+        if (token != null && !token.equals("null")) {
             try {
                 DecodedJWT verifiedToken = JWT.require(Algorithm.HMAC512(SECRET.getBytes()))
                         .build()
