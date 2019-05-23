@@ -58,7 +58,19 @@ public class AuthController {
         AuthResponse auth = new AuthResponse();
         String token = (String) payload.get("token");
         User user = new User();
-        if (session != null) {
+        if (token != null) {
+            try {
+                DecodedJWT verifiedToken = JWT.require(Algorithm.HMAC512(SECRET.getBytes()))
+                        .build()
+                        .verify(token);
+                auth.setToken(verifiedToken.getToken());
+                //In the future, grab the user from the DB based on the ID stored in the JWT subject.
+                user.setId(verifiedToken.getSubject());
+                auth.setUser(user);
+            } catch (JWTVerificationException exception) {
+                auth.setToken(null);
+            }
+        } else if (session != null) {
             user = (User) session.getAttribute("user");
             token = JWT.create().withSubject(user.getId())
                     .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
@@ -66,18 +78,6 @@ public class AuthController {
             auth.setToken(token);
             auth.setUser((User) session.getAttribute("user"));
             session = null;
-        } else if (token != null) {
-            try {
-                DecodedJWT verifiedToken = JWT.require(Algorithm.HMAC512(SECRET.getBytes()))
-                        .build()
-                        .verify(token);
-                auth.setToken(verifiedToken.getToken());
-                //In the future, grab the user from the DB based on the ID stored in the JWT subject. 
-                user.setId(verifiedToken.getSubject());
-                auth.setUser(user);
-            } catch (JWTVerificationException exception) {
-                auth.setToken(null);
-            }
         }
         return auth;
     }
