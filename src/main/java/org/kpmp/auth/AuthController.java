@@ -54,12 +54,11 @@ public class AuthController {
 
     @CrossOrigin
     @RequestMapping(value = "/auth")
-    public @ResponseBody AuthResponse getAuth(@RequestBody Map<String, Object> payload, HttpSession httpSession) throws IOException {
+    public @ResponseBody AuthResponse getAuth(@RequestBody Map<String, Object> payload) throws IOException {
         AuthResponse auth = new AuthResponse();
         String token = (String) payload.get("token");
-        session = httpSession;
         User user = new User();
-        if (token != null) {
+        if (!token.equals("null")) {
             try {
                 DecodedJWT verifiedToken = JWT.require(Algorithm.HMAC512(SECRET.getBytes()))
                         .build()
