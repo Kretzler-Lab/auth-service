@@ -1,5 +1,6 @@
 package users;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -13,6 +14,7 @@ public class User {
     private String displayName;
     private String email;
 
+    @JsonIgnore
     public String getId() {
         return id;
     }
