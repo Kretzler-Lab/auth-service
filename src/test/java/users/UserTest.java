@@ -71,8 +71,7 @@ public class UserTest {
         testUser.setFirstName("Ziggy");
         testUser.setLastName("Stardust");
         testUser.setEmail("ziggy@mars.com");
-        assertEquals("{\"id\":\"12345\""+
-                ",\"firstName\":\"Ziggy\"" +
+        assertEquals("{\"firstName\":\"Ziggy\"" +
                 ",\"lastName\":\"Stardust\"" +
                 ",\"displayName\":\"Space Oddity\"" +
                 ",\"email\":\"ziggy@mars.com\"}", testUser.toJson());
