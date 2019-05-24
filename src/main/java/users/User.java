@@ -1,6 +1,8 @@
 package users;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @JsonPropertyOrder({ "id", "firstName", "lastName", "displayName", "email" })
 public class User {
@@ -58,5 +60,10 @@ public class User {
                 ", lastName: " + lastName +
                 ", displayName: " + displayName +
                 ", email: " + email;
+    }
+
+    public String toJson() throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.writeValueAsString(this);
     }
 }
