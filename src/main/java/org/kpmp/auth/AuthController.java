@@ -1,8 +1,6 @@
 package org.kpmp.auth;
 
 import static com.auth0.jwt.algorithms.Algorithm.HMAC512;
-import static org.kpmp.auth.SecurityConstants.EXPIRATION_TIME;
-import static org.kpmp.auth.SecurityConstants.SECRET;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -35,11 +33,13 @@ public class AuthController {
     private HttpSession session;
     private ShibbolethUserService userService;
     private UTF8Encoder encoder;
+    private SecurityConstants securityConstants;
 
     @Autowired
-    public AuthController(ShibbolethUserService userService, UTF8Encoder encoder) {
+    public AuthController(ShibbolethUserService userService, UTF8Encoder encoder, SecurityConstants securityConstants) {
         this.userService = userService;
         this.encoder = encoder;
+        this.securityConstants = securityConstants;
     }
 
     @RequestMapping(value = "/login", method = RequestMethod.GET)
@@ -60,7 +60,7 @@ public class AuthController {
         ObjectMapper mapper = new ObjectMapper();
         if (token != null) {
             try {
-                DecodedJWT verifiedToken = JWT.require(Algorithm.HMAC512(SECRET.getBytes()))
+                DecodedJWT verifiedToken = JWT.require(Algorithm.HMAC512(securityConstants.getSecret()))
                         .build()
                         .verify(token);
                 auth.setToken(verifiedToken.getToken());
@@ -73,8 +73,8 @@ public class AuthController {
         if (session != null && auth.getToken() == null) {
             user = (User) session.getAttribute("user");
             token = JWT.create().withSubject(user.getId())
-                    .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRATION_TIME)).withClaim("user", user.toJson())
-                    .sign(HMAC512(SECRET.getBytes()));
+                    .withExpiresAt(new Date(System.currentTimeMillis() + securityConstants.EXPIRATION_TIME)).withClaim("user", user.toJson())
+                    .sign(HMAC512(securityConstants.getSecret()));
             auth.setToken(token);
             auth.setUser((User) session.getAttribute("user"));
             session = null;
