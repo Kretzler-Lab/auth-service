@@ -33,13 +33,13 @@ public class AuthController {
     private HttpSession session;
     private ShibbolethUserService userService;
     private UTF8Encoder encoder;
-    private SecurityConstants securityConstants;
+    private TokenService tokenService;
 
     @Autowired
-    public AuthController(ShibbolethUserService userService, UTF8Encoder encoder, SecurityConstants securityConstants) {
+    public AuthController(ShibbolethUserService userService, UTF8Encoder encoder, TokenService tokenService) {
         this.userService = userService;
         this.encoder = encoder;
-        this.securityConstants = securityConstants;
+        this.tokenService = tokenService;
     }
 
     @RequestMapping(value = "/login", method = RequestMethod.GET)
@@ -55,29 +55,18 @@ public class AuthController {
     @RequestMapping(value = "/auth")
     public @ResponseBody AuthResponse getAuth(@RequestBody Map<String, Object> payload) throws IOException {
         AuthResponse auth = new AuthResponse();
-        String token = (String) payload.get("token");
+        String tokenString = (String) payload.get("token");
         User user;
         ObjectMapper mapper = new ObjectMapper();
-        if (token != null) {
-            try {
-                DecodedJWT verifiedToken = JWT.require(Algorithm.HMAC512(securityConstants.getSecret()))
-                        .build()
-                        .verify(token);
-                auth.setToken(verifiedToken.getToken());
-                user = mapper.readValue(verifiedToken.getClaim("user").asString(), User.class);
-                auth.setUser(user);
-            } catch (JWTVerificationException exception) {
-                auth.setToken(null);
-            }
+        if (tokenString != null) {
+            DecodedJWT verifiedToken = tokenService.verifyToken(tokenString);
+            user = tokenService.getUserFromToken(verifiedToken);
         }
         if (session != null && auth.getToken() == null) {
             user = (User) session.getAttribute("user");
-            token = JWT.create().withSubject(user.getId())
-                    .withExpiresAt(new Date(System.currentTimeMillis() + securityConstants.EXPIRATION_TIME)).withClaim("user", user.toJson())
-                    .sign(HMAC512(securityConstants.getSecret()));
-            auth.setToken(token);
+            tokenString = tokenService.buildTokenWithUser(user);
+            auth.setToken(tokenString);
             auth.setUser((User) session.getAttribute("user"));
-            session = null;
         }
         return auth;
     }
