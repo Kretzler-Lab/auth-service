@@ -1,8 +1,6 @@
 package org.kpmp.auth;
 
 import static com.auth0.jwt.algorithms.Algorithm.HMAC512;
-import static org.kpmp.auth.SecurityConstants.EXPIRATION_TIME;
-import static org.kpmp.auth.SecurityConstants.SECRET;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -35,11 +33,13 @@ public class AuthController {
     private HttpSession session;
     private ShibbolethUserService userService;
     private UTF8Encoder encoder;
+    private TokenService tokenService;
 
     @Autowired
-    public AuthController(ShibbolethUserService userService, UTF8Encoder encoder) {
+    public AuthController(ShibbolethUserService userService, UTF8Encoder encoder, TokenService tokenService) {
         this.userService = userService;
         this.encoder = encoder;
+        this.tokenService = tokenService;
     }
 
     @RequestMapping(value = "/login", method = RequestMethod.GET)
@@ -55,30 +55,23 @@ public class AuthController {
     @RequestMapping(value = "/auth")
     public @ResponseBody AuthResponse getAuth(@RequestBody Map<String, Object> payload) throws IOException {
         AuthResponse auth = new AuthResponse();
-        String token = (String) payload.get("token");
-        User user;
-        ObjectMapper mapper = new ObjectMapper();
-        if (token != null) {
-            try {
-                DecodedJWT verifiedToken = JWT.require(Algorithm.HMAC512(SECRET.getBytes()))
-                        .build()
-                        .verify(token);
+        String tokenString = (String) payload.get("token");
+        if (tokenString != null) {
+            DecodedJWT verifiedToken = tokenService.verifyToken(tokenString);
+            if (verifiedToken != null) {
                 auth.setToken(verifiedToken.getToken());
-                user = mapper.readValue(verifiedToken.getClaim("user").asString(), User.class);
-                auth.setUser(user);
-            } catch (JWTVerificationException exception) {
-                auth.setToken(null);
+                auth.setUser(tokenService.getUserFromToken(verifiedToken));
             }
         }
+
         if (session != null && auth.getToken() == null) {
-            user = (User) session.getAttribute("user");
-            token = JWT.create().withSubject(user.getId())
-                    .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRATION_TIME)).withClaim("user", user.toJson())
-                    .sign(HMAC512(SECRET.getBytes()));
-            auth.setToken(token);
-            auth.setUser((User) session.getAttribute("user"));
+            User user = (User) session.getAttribute("user");
+            tokenString = tokenService.buildTokenWithUser(user);
+            auth.setToken(tokenString);
+            auth.setUser(user);
             session = null;
         }
+
         return auth;
     }
 
