@@ -56,18 +56,21 @@ public class AuthController {
     public @ResponseBody AuthResponse getAuth(@RequestBody Map<String, Object> payload) throws IOException {
         AuthResponse auth = new AuthResponse();
         String tokenString = (String) payload.get("token");
-        User user;
-        ObjectMapper mapper = new ObjectMapper();
         if (tokenString != null) {
             DecodedJWT verifiedToken = tokenService.verifyToken(tokenString);
-            user = tokenService.getUserFromToken(verifiedToken);
+            if (verifiedToken != null) {
+                auth.setToken(verifiedToken.getToken());
+                auth.setUser(tokenService.getUserFromToken(verifiedToken));
+            }
         }
+
         if (session != null && auth.getToken() == null) {
-            user = (User) session.getAttribute("user");
+            User user = (User) session.getAttribute("user");
             tokenString = tokenService.buildTokenWithUser(user);
             auth.setToken(tokenString);
-            auth.setUser((User) session.getAttribute("user"));
+            auth.setUser(user);
         }
+
         return auth;
     }
 
