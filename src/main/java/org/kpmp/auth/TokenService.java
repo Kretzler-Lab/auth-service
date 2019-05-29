@@ -27,7 +27,6 @@ public class TokenService {
         return JWT.create().withSubject(user.getId())
                 .withExpiresAt(new Date(System.currentTimeMillis() + securityConstants.EXPIRATION_TIME)).withClaim("user", user.toJson())
                 .sign(HMAC512(securityConstants.getSecret()));
-
     }
 
     public DecodedJWT verifyToken(String token) {

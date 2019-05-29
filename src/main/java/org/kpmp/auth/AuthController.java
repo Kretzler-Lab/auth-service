@@ -69,6 +69,7 @@ public class AuthController {
             tokenString = tokenService.buildTokenWithUser(user);
             auth.setToken(tokenString);
             auth.setUser(user);
+            session = null;
         }
 
         return auth;
