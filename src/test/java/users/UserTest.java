@@ -63,4 +63,17 @@ public class UserTest {
                 ", displayName: Space Oddity" +
                 ", email: ziggy@mars.com", testUser.toString());
     }
+
+    @Test
+    public void testToJson() throws Exception{
+        testUser.setId("12345");
+        testUser.setDisplayName("Space Oddity");
+        testUser.setFirstName("Ziggy");
+        testUser.setLastName("Stardust");
+        testUser.setEmail("ziggy@mars.com");
+        assertEquals("{\"firstName\":\"Ziggy\"" +
+                ",\"lastName\":\"Stardust\"" +
+                ",\"displayName\":\"Space Oddity\"" +
+                ",\"email\":\"ziggy@mars.com\"}", testUser.toJson());
+    }
 }

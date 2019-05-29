@@ -1,8 +1,6 @@
 package org.kpmp.auth;
 
 import static com.auth0.jwt.algorithms.Algorithm.HMAC512;
-import static org.kpmp.auth.SecurityConstants.EXPIRATION_TIME;
-import static org.kpmp.auth.SecurityConstants.SECRET;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -12,6 +10,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -34,11 +33,13 @@ public class AuthController {
     private HttpSession session;
     private ShibbolethUserService userService;
     private UTF8Encoder encoder;
+    private TokenService tokenService;
 
     @Autowired
-    public AuthController(ShibbolethUserService userService, UTF8Encoder encoder) {
+    public AuthController(ShibbolethUserService userService, UTF8Encoder encoder, TokenService tokenService) {
         this.userService = userService;
         this.encoder = encoder;
+        this.tokenService = tokenService;
     }
 
     @RequestMapping(value = "/login", method = RequestMethod.GET)
@@ -46,8 +47,6 @@ public class AuthController {
         String redirectURL = request.getParameter("redirect");
         session = httpSession;
         User user = userService.getUser(request, encoder);
-        //Setting the userID to the session ID for now, but in the future this should probably come from a DB.
-        user.setId(session.getId());
         session.setAttribute("user", user);
         return new RedirectView(redirectURL);
     }
@@ -56,29 +55,23 @@ public class AuthController {
     @RequestMapping(value = "/auth")
     public @ResponseBody AuthResponse getAuth(@RequestBody Map<String, Object> payload) throws IOException {
         AuthResponse auth = new AuthResponse();
-        String token = (String) payload.get("token");
-        User user = new User();
-        if (session != null) {
-            user = (User) session.getAttribute("user");
-            token = JWT.create().withSubject(user.getId())
-                    .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-                    .sign(HMAC512(SECRET.getBytes()));
-            auth.setToken(token);
-            auth.setUser((User) session.getAttribute("user"));
-            session = null;
-        } else if (token != null) {
-            try {
-                DecodedJWT verifiedToken = JWT.require(Algorithm.HMAC512(SECRET.getBytes()))
-                        .build()
-                        .verify(token);
+        String tokenString = (String) payload.get("token");
+        if (tokenString != null) {
+            DecodedJWT verifiedToken = tokenService.verifyToken(tokenString);
+            if (verifiedToken != null) {
                 auth.setToken(verifiedToken.getToken());
-                //In the future, grab the user from the DB based on the ID stored in the JWT subject. 
-                user.setId(verifiedToken.getSubject());
-                auth.setUser(user);
-            } catch (JWTVerificationException exception) {
-                auth.setToken(null);
+                auth.setUser(tokenService.getUserFromToken(verifiedToken));
             }
         }
+
+        if (session != null && auth.getToken() == null) {
+            User user = (User) session.getAttribute("user");
+            tokenString = tokenService.buildTokenWithUser(user);
+            auth.setToken(tokenString);
+            auth.setUser(user);
+            session = null;
+        }
+
         return auth;
     }
 
