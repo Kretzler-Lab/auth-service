@@ -7,7 +7,7 @@ This is the repository for the authentication service for UM KPMP apps.
 The /login endpoint should be the only location covered by Shibboleth, so the Apache config should look something like this:
 
 ```
-  <Location "/login">
+  <Location "/api/login">
     AuthType shibboleth
     ShibRequireSession On
     ShibUseHeaders On
