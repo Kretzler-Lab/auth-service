@@ -7,7 +7,7 @@ This is the repository for the authentication service for UM KPMP apps.
 The /login endpoint should be the only location covered by Shibboleth, so the Apache config should look something like this:
 
 ```
-  <Location "/login">
+  <Location "/api/login">
     AuthType shibboleth
     ShibRequireSession On
     ShibUseHeaders On
@@ -44,5 +44,5 @@ The /auth endpoint does three things:
 ```
 
 2) If /auth is called with a JWT, the service checks the validity of JWT and either decodes the user information and sends back the auth response above or sends back the response above with a null token and user.
-3) If /auth is called without a session or a JWT it returns a the response above with a null token and user. 
+3) If /auth is called without a session or a valid JWT it returns a the response above with a null token and user. 
 
