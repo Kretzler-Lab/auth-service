@@ -43,6 +43,6 @@ The /auth endpoint does three things:
 }
 ```
 
-2) If /auth is called with a JWT, the service checks the validity of JWT and either decodes the user information and sends back the auth response above or sends back null.
+2) If /auth is called with a JWT, the service checks the validity of JWT and either decodes the user information and sends back the auth response above or sends back the response above with a null token and user.
 3) If /auth is called without a session or a JWT it returns a the response above with a null token and user. 
 
