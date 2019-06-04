@@ -53,7 +53,7 @@ public class AuthController {
 
     @CrossOrigin
     @RequestMapping(value = "/auth")
-    public @ResponseBody AuthResponse getAuth(@RequestBody Map<String, Object> payload) throws IOException {
+    public @ResponseBody AuthResponse getAuth(@RequestBody (required = false) Map<String, Object> payload) throws IOException {
         AuthResponse auth = new AuthResponse();
         String tokenString = (String) payload.get("token");
         if (tokenString != null) {
