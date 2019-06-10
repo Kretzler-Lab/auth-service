@@ -45,7 +45,7 @@ public class AuthController {
     @RequestMapping(value = "/login", method = RequestMethod.GET)
     public @ResponseBody RedirectView login(HttpServletRequest request, HttpSession httpSession) throws UnsupportedEncodingException {
         String redirectURL = request.getParameter("redirect");
-        session = httpSession;
+        session = request.getSession(true);
         User user = userService.getUser(request, encoder);
         session.setAttribute("user", user);
         return new RedirectView(redirectURL);
