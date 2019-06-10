@@ -45,7 +45,7 @@ public class AuthController {
     @RequestMapping(value = "/login", method = RequestMethod.GET)
     public @ResponseBody RedirectView login(HttpServletRequest request, HttpSession httpSession) throws UnsupportedEncodingException {
         String redirectURL = request.getParameter("redirect");
-        session = request.getSession(true);
+        session = httpSession;
         User user = userService.getUser(request, encoder);
         session.setAttribute("user", user);
         return new RedirectView(redirectURL);
@@ -53,10 +53,9 @@ public class AuthController {
 
     @CrossOrigin
     @RequestMapping(value = "/auth")
-    public @ResponseBody AuthResponse getAuth(HttpServletRequest request, @RequestBody (required = false) Map<String, Object> payload) throws IOException {
+    public @ResponseBody AuthResponse getAuth(@RequestBody (required = false) Map<String, Object> payload) throws IOException {
         AuthResponse auth = new AuthResponse();
         String tokenString = (String) payload.get("token");
-        session = request.getSession(false);
         if (tokenString != null) {
             DecodedJWT verifiedToken = tokenService.verifyToken(tokenString);
             if (verifiedToken != null) {
