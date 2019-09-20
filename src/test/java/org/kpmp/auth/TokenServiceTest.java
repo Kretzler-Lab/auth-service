@@ -6,7 +6,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import users.User;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -33,7 +32,7 @@ public class TokenServiceTest {
     @Test
     public void testBuildandVerifyToken() throws Exception {
         when(securityConstants.getSecret()).thenReturn("GiveMeTheInfinityStones".getBytes());
-        User user = new User();
+        UserAuth user = new UserAuth();
         user.setId("123");
         user.setDisplayName("Thanos the Great");
         user.setEmail("bigguy@titan.com");
@@ -43,7 +42,7 @@ public class TokenServiceTest {
         assertNotNull(token);
         DecodedJWT verifiedToken = tokenService.verifyToken(token);
         assertNotNull(verifiedToken);
-        User userFromJWT = tokenService.getUserFromToken(verifiedToken);
+        UserAuth userFromJWT = tokenService.getUserFromToken(verifiedToken);
         assertEquals(userFromJWT.getDisplayName(), user.getDisplayName());
         assertEquals(userFromJWT.getEmail(), user.getEmail());
         assertEquals(userFromJWT.getFirstName(), user.getFirstName());

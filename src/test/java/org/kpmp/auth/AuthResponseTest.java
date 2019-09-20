@@ -5,7 +5,6 @@ import static org.junit.Assert.assertEquals;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import users.User;
 
 public class AuthResponseTest {
 
@@ -30,7 +29,7 @@ public class AuthResponseTest {
 
     @Test
     public void testSetUser() throws Exception {
-        User user = new User();
+        UserAuth user = new UserAuth();
         authResponse.setUser(user);
         assertEquals(user, authResponse.getUser());
     }

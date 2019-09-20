@@ -18,8 +18,6 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
 
-import users.User;
-
 @Controller
 public class AuthController {
 
@@ -39,7 +37,7 @@ public class AuthController {
     public @ResponseBody RedirectView login(HttpServletRequest request, HttpSession httpSession) throws UnsupportedEncodingException {
         String redirectURL = request.getParameter("redirect");
         session = httpSession;
-        User user = userService.getUser(request, encoder);
+        UserAuth user = userService.getUser(request, encoder);
         session.setAttribute("user", user);
         return new RedirectView(redirectURL);
     }
@@ -58,7 +56,7 @@ public class AuthController {
         }
 
         if (session != null && auth.getToken() == null) {
-            User user = (User) session.getAttribute("user");
+            UserAuth user = (UserAuth) session.getAttribute("user");
             tokenString = tokenService.buildTokenWithUser(user);
             auth.setToken(tokenString);
             auth.setUser(user);

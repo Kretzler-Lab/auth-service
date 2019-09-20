@@ -1,10 +1,8 @@
 package org.kpmp.auth;
 
-import users.User;
-
 public class AuthResponse {
     private String token;
-    private User user;
+    private UserAuth user;
 
     public String getToken() {
         return token;
@@ -14,11 +12,11 @@ public class AuthResponse {
         this.token = token;
     }
 
-    public User getUser() {
+    public UserAuth getUser() {
         return user;
     }
 
-    public void setUser(User user) {
+    public void setUser(UserAuth user) {
         this.user = user;
     }
 }
