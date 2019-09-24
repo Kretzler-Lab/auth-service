@@ -28,3 +28,7 @@ dependencies {
 	compile 'org.springframework.boot:spring-boot-starter-web'
 	compile 'org.jsoup:jsoup:1.11.3'
 }
+
+springBoot {
+	mainClassName = "org.kpmp.Application"
+}

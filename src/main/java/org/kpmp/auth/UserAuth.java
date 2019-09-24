@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.util.Arrays;
+
 @JsonPropertyOrder({ "id", "firstName", "lastName", "displayName", "email" })
 public class UserAuth {
 
@@ -101,7 +103,18 @@ public class UserAuth {
 
     @Override
     public String toString() {
-        return  "";
+        return "UserAuth{" +
+                "_id='" + _id + '\'' +
+                ", active=" + active +
+                ", email='" + email + '\'' +
+                ", first_name='" + first_name + '\'' +
+                ", groups=" + Arrays.toString(groups) +
+                ", last_name='" + last_name + '\'' +
+                ", organization_id='" + organization_id + '\'' +
+                ", phone_numbers=" + Arrays.toString(phone_numbers) +
+                ", displayName='" + displayName + '\'' +
+                ", shib_id='" + shib_id + '\'' +
+                '}';
     }
 
     public String toJson() throws JsonProcessingException {
