@@ -19,15 +19,26 @@ public class UserPortalService {
     @Value("${userportal.url}")
     private String userPortalURL;
 
+    @Value("${client.id}")
+    private String clientId;
+
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    public UserAuth getUserAuth(String shib_id) throws RestClientException{
+    public UserAuth getUserAuth(String shib_id) throws HttpClientErrorException {
+        return getUserAuth(clientId, shib_id);
+    }
+
+    public UserAuth getUserAuthWithClient(String clientId, String shib_id) throws HttpClientErrorException {
+        return getUserAuth(clientId, shib_id);
+    }
+
+    private UserAuth getUserAuth(String clientId, String shib_id) {
         HttpHeaders headers = new HttpHeaders();
-        headers.set("X-API-TOKEN", "1ef4ecb8-2c2a-48af-889b-3ceb9ca9d102");
+        headers.set("X-API-TOKEN", clientId);
         HttpEntity<?> entity = new HttpEntity<Object>("body", headers);
         RestTemplate restTemplate = new RestTemplate();
         UserAuth userAuth = restTemplate.exchange(userPortalURL + "/api/user/" + shib_id,
-                    HttpMethod.GET, entity, UserAuth.class).getBody();
+                HttpMethod.GET, entity, UserAuth.class).getBody();
         return userAuth;
     }
 
