@@ -10,12 +10,24 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.server.ResponseStatusException;
 
 
+import java.text.MessageFormat;
+
 import static org.springframework.http.HttpStatus.*;
 
 @Controller
 public class AuthController {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
+    private static final String userFoundFmt =
+            "Using default client. User with shib id {} found: {}";
+    private static final String userNotFoundFmt =
+            "Using default client. User with shib id {} not found";
+    private static final String userClientFoundFmt =
+            "Using client ID {}. User with shib id {} found: {}";
+    private static final String userClientNotFoundFmt =
+            "Using client ID {}. User with shib id {} not found";
+    private static final String portalError = "There was a problem connecting to the User Portal: ";
+
     private UserPortalService userPortalService;
 
     @Autowired
@@ -26,11 +38,16 @@ public class AuthController {
     @RequestMapping(value = "/v1/user/info/{shibId}", method = RequestMethod.GET)
     public @ResponseBody UserAuth getUserInfo(@PathVariable("shibId") String shibId) {
         try {
-            return userPortalService.getUserAuth(shibId);}
+            UserAuth userAuth = userPortalService.getUserAuth(shibId);
+            log.info(userFoundFmt, shibId, userAuth.toString());
+            return userAuth;
+        }
         catch (HttpClientErrorException e) {
             if (e.getStatusCode().equals(NOT_FOUND)) {
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+                log.error(userNotFoundFmt, shibId);
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User " + shibId + " not found");
             } else {
+                log.error(portalError + e.getStatusCode());
                 throw new ResponseStatusException(e.getStatusCode(), "There was a problem connecting to the User Portal");
             }
         }
@@ -39,11 +56,16 @@ public class AuthController {
     @RequestMapping(value = "/v1/user/info/{clientId}/{shibId}", method = RequestMethod.GET)
     public @ResponseBody UserAuth getUserInfoWithClient(@PathVariable("clientId") String clientId, @PathVariable("shibId") String shibId) {
         try {
-            return userPortalService.getUserAuthWithClient(clientId, shibId);}
+            UserAuth userAuth = userPortalService.getUserAuthWithClient(clientId, shibId);
+            log.info(userClientFoundFmt, clientId, shibId, userAuth.toString());
+            return userAuth;
+        }
         catch (HttpClientErrorException e) {
             if (e.getStatusCode().equals(NOT_FOUND)) {
+                log.error(userClientNotFoundFmt, clientId, shibId);
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
             } else {
+                log.error(portalError + e.getStatusCode());
                 throw new ResponseStatusException(e.getStatusCode(), "There was a problem connecting to the User Portal");
             }
         }

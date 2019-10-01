@@ -47,7 +47,7 @@ public class AuthControllerTest {
     public void testGetUserAuthNotFound() {
         when(userPortalService.getUserAuth("shibId")).thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND));
         exception.expect(ResponseStatusException.class);
-        exception.expectMessage("User not found");
+        exception.expectMessage("User shibId not found");
         authController.getUserInfo("shibId");
     }
 
