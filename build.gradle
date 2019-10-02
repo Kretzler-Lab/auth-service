@@ -10,12 +10,16 @@ buildscript {
 	}
 }
 
+plugins {
+    id 'com.palantir.docker' version '0.22.1'
+}
+
+group = 'kingstonduo'
+
 apply plugin: 'java'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 
-group = 'org.kpmp'
-version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '1.8'
 
 repositories {
@@ -31,4 +35,21 @@ dependencies {
 
 springBoot {
 	mainClassName = "org.kpmp.Application"
+}
+
+jar {
+	baseName='user-auth'
+	version='1.0'
+}
+
+task unpack(type: Copy) {
+    dependsOn bootJar
+    from(zipTree(tasks.bootJar.outputs.files.singleFile))
+    into("build/dependency")
+}
+
+docker {
+    name "${project.group}/${jar.baseName}"
+    copySpec.from(tasks.unpack.outputs).into("dependency")
+    buildArgs(['DEPENDENCY': "dependency"])
 }
