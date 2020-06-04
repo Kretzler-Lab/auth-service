@@ -1,4 +1,9 @@
 FROM openjdk:8-jdk-alpine
+
+RUN apk add --no-cache tzdata
+RUN cp /usr/share/zoneinfo/America/Detroit /etc/localtime
+RUN echo "America/Detroit" > /etc/timezone
+
 VOLUME /tmp
 ARG DEPENDENCY=target/dependency
 
