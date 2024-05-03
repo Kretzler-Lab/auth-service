@@ -1,17 +1,17 @@
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/fb57df77e4f44d159fd7b782a039207a)](https://www.codacy.com/manual/rlreamy/scutum?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=KPMP/scutum&amp;utm_campaign=Badge_Grade)
 [![Build Status](https://travis-ci.org/KPMP/scutum.svg?branch=develop)](https://travis-ci.org/KPMP/scutum)
 
-# User Portal Authentication Service for UM KPMP Apps
+# User Portal Authentication Service 
 
-This is the repository for the authentication service for UM KPMP apps. It connects to the UWash User Portal to get group/access information for KPMP users. 
+This is the repository for the authentication service for MiKTMC apps. It connects to the MiKTMC User Portal to get group/access information for MiKTMC users. 
 
 ## Endpoint /v1/user/info/{shibId} 
 
-Returns the JSON object from UW User Portal with the information for the user with specified shibId. Throws a 404 if the user is not found. This endpoint uses the default client ID (i.e. the client ID for this app). The default clientID is set in the Docker environment variable ENV_DEFAULT_CLIENT_ID (set in the .env file).
+Returns the JSON object from User Portal with the information for the user with specified shibId. Throws a 404 if the user is not found. This endpoint uses the default client ID (i.e. the client ID for this app). The default clientID is set in the Docker environment variable ENV_DEFAULT_CLIENT_ID (set in the .env file).
 
 ## Endpoint /v1/user/info/{clientId}/{shibId}
 
-Returns the JSON object from UW User Portal with the information for the user with specified shibId. Throws a 404 if the user is not found. This endpoint requires a client ID (i.e. the clientID of the application requesting the login information). 
+Returns the JSON object from User Portal with the information for the user with specified shibId. Throws a 404 if the user is not found. This endpoint requires a client ID (i.e. the clientID of the application requesting the login information). 
 
 ## Return JSON
 
