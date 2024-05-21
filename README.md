@@ -1,6 +1,3 @@
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/fb57df77e4f44d159fd7b782a039207a)](https://www.codacy.com/manual/rlreamy/scutum?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=KPMP/scutum&amp;utm_campaign=Badge_Grade)
-[![Build Status](https://travis-ci.org/KPMP/scutum.svg?branch=develop)](https://travis-ci.org/KPMP/scutum)
-
 # User Portal Authentication Service 
 
 This is the repository for the authentication service for MiKTMC apps. It connects to the MiKTMC User Portal to get group/access information for MiKTMC users. 
