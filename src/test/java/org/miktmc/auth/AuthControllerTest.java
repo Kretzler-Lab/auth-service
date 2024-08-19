@@ -1,4 +1,4 @@
-package org.kpmp.auth;
+package org.miktmc.auth;
 
 import org.junit.After;
 import org.junit.Before;

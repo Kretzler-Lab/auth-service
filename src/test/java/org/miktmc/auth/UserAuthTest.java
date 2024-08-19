@@ -1,4 +1,4 @@
-package org.kpmp.auth;
+package org.miktmc.auth;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;

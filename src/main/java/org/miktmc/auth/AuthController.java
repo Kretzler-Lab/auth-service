@@ -1,4 +1,4 @@
-package org.kpmp.auth;
+package org.miktmc.auth;
 
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 

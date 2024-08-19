@@ -1,4 +1,4 @@
-package org.kpmp.auth;
+package org.miktmc.auth;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
