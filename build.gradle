@@ -42,7 +42,7 @@ springBoot {
 
 jar {
 	baseName='user-auth'
-	version='1.0'
+	version='1.2'
 }
 
 task unpack(type: Copy) {
